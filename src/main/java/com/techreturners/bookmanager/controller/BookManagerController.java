@@ -45,4 +45,11 @@ public class BookManagerController {
         return new ResponseEntity<>(bookManagerService.getBookById(bookId), HttpStatus.OK);
     }
 
+    // Delete a book from the repo - As a user, I want to use the Book Manager API to delete a book using its ID
+    @DeleteMapping({"/{bookId}"})
+    public ResponseEntity<Book> deleteBookById(@PathVariable("bookId") Long bookId){
+        bookManagerService.deleteBookById(bookId);
+        return new ResponseEntity<>(bookManagerService.getBookById(bookId), HttpStatus.ACCEPTED);
+    }
+
 }
