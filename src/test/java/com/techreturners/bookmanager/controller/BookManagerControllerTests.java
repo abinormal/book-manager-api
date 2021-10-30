@@ -111,4 +111,36 @@ public class BookManagerControllerTests {
         verify(mockBookManagerServiceImpl, times(1)).updateBookById(book.getId(), book);
     }
 
+    @Test
+    public void testDeleteBookById() throws Exception {
+        // Arrange
+        List<Book> books = new ArrayList<>();
+        books.add(new Book(1L, "Book One", "This is the description for Book One", "Person One", Genre.Education));
+        books.add(new Book(2L, "Book Two", "This is the description for Book Two", "Person Two", Genre.Education));
+        books.add(new Book(3L, "Book Three", "This is the description for Book Three", "Person Three", Genre.Education));
+
+        when(mockBookManagerServiceImpl.getAllBooks()).thenReturn(books);
+        // Check the books were added successfully
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.get("/api/v1/book/"))
+                // Assert
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("Book One"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("Book Two"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(3))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].title").value("Book Three"));
+        // Act - delete
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.delete("/api/v1/book/2/"))
+                // Assert
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
+        // Act - check book removed
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.get("/api/v1/book/2/"))
+                // Assert - has been removed
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2]").doesNotExist());
+    }
+
 }
